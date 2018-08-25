@@ -10,22 +10,27 @@ const port = 9999;
 const nav = [{ link: '/books', title: 'Book' }, { link: '/authors', title: 'Author' }];
 
 const booksRoute = require('./src/bookRouts/bookRouts')(nav);
+const adminRoute = require('./src/bookRouts/adminRouts')(nav);
 
 const config = {
-  user: 'sa',
-  password: 'Password123',
-  server: 'MUM02L6324', // You can use 'localhost\\instance' to connect to named instance
+  user: 'library',
+  password: 'psL1brary',
+  server: 'pslibrary.database.windows.net', // You can use 'localhost\\instance' to connect to named instance
   database: 'PSLibrary',
-  port: 9999,
 
   options: {
-    TrustServerCertificate: true,
-    MultipleActiveResultSets: false,
-    encrypt: false // Use this if you're on Windows Azure
+    // TrustServerCertificate: true,
+    // MultipleActiveResultSets: false,
+    encrypt: true // Use this if you're on Windows Azure
   }
 };
 
-sql.connect(config).catch((error) => { console.log(error); });
+sql.connect(config).then(() => {
+  console.log('connected');
+}).catch((error) => {
+  console.log(error);
+});
+
 app.use(morgan('tiny'));
 app.use(express.static(path.join(__dirname, '/public/')));
 app.use('/css', express.static(path.join(__dirname, '/node_modules/bootstrap/dist/css')));
@@ -36,6 +41,8 @@ app.set('views', './src/views');
 app.set('view engine', 'ejs');
 
 app.use('/books', booksRoute);
+app.use('/admin', adminRoute);
+
 app.get('/', (req, res) => {
   res.render(
     'index',
@@ -49,5 +56,5 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log('listening');
   debug('debug listening');
-  // open(`http://localhost:${port}`);
+  open(`http://localhost:${port}`);
 });
